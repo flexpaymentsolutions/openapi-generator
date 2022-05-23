@@ -1,10 +1,10 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.penneo</groupId>
-    <artifactId>PhpSymfonyPetstoreServerTests</artifactId>
+    <groupId>org.openapitools</groupId>
+    <artifactId>PhpSymfonyTests</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>PHP Symfony Petstore Server</name>
+    <name>PHP Symfony server</name>
     <build>
         <plugins>
             <plugin>
@@ -47,6 +47,9 @@
                         </goals>
                         <configuration>
                             <executable>vendor/bin/phpunit</executable>
+                            <arguments>
+                                <argument>tests</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
@@ -54,4 +57,3 @@
         </plugins>
     </build>
 </project>
-
