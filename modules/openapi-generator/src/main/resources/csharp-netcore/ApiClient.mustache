@@ -433,6 +433,14 @@ namespace {{packageName}}.Client
             RestClient client = new RestClient(baseUrl);
 
             client.ClearHandlers();
+            
+            //Handle the case of server not returning a content type
+            var acceptsJson = req.Parameters.FirstOrDefault(
+                x => x.Name == "Accept" 
+                && x.Type == ParameterType.HttpHeader 
+                && ((string)x.Value).IndexOf("json") >= 0) 
+                != null;
+                
             var existingDeserializer = req.JsonSerializer as IDeserializer;
             if (existingDeserializer != null)
             {
@@ -441,6 +449,10 @@ namespace {{packageName}}.Client
                 client.AddHandler("text/x-json", () => existingDeserializer);
                 client.AddHandler("text/javascript", () => existingDeserializer);
                 client.AddHandler("*+json", () => existingDeserializer);
+                if (acceptsJson)
+                {
+                    client.AddHandler("*", () => existingDeserializer);
+                }
             }
             else
             {
@@ -450,13 +462,20 @@ namespace {{packageName}}.Client
                 client.AddHandler("text/x-json", () => customDeserializer);
                 client.AddHandler("text/javascript", () => customDeserializer);
                 client.AddHandler("*+json", () => customDeserializer);
+                if (acceptsJson)
+                {
+                    client.AddHandler("*", () => customDeserializer);
+                }
             }
 
             var xmlDeserializer = new XmlDeserializer();
             client.AddHandler("application/xml", () => xmlDeserializer);
             client.AddHandler("text/xml", () => xmlDeserializer);
             client.AddHandler("*+xml", () => xmlDeserializer);
-            client.AddHandler("*", () => xmlDeserializer);
+            if (!acceptsJson)
+            {
+                client.AddHandler("*", () => xmlDeserializer);
+            }
 
             client.Timeout = configuration.Timeout;
 
